@@ -11,10 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Kaantip">
-        <activity android:name=".ChatRoom"></activity>
-        <activity
-            android:name=".ChatList"
-            android:label="@string/title_activity_chat_list" />
+        <activity android:name=".ChatList"></activity>
+        <activity android:name=".ChatRoom" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
