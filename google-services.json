@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "242067429202",
+    "firebase_url": "https://kaantip.firebaseio.com",
+    "project_id": "kaantip",
+    "storage_bucket": "kaantip.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242067429202:android:4a7a4931ce4273b7d58c8b",
+        "android_client_info": {
+          "package_name": "icefozen.java.kaantip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242067429202-lp60n7biik27c5qptd1924l7a6kggo2p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "icefozen.java.kaantip",
+            "certificate_hash": "27acbe18adaf648cd8247d99c244dda68b93e996"
+          }
+        },
+        {
+          "client_id": "242067429202-ejdkdlliq03bv6dbvo83hmsjju8tjrae.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQlcd_fUsmHUGof9dNbTBBjknpF8T7SFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242067429202-ejdkdlliq03bv6dbvo83hmsjju8tjrae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
