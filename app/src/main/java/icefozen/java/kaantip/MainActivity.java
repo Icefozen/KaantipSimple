@@ -7,12 +7,14 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -163,6 +165,14 @@ public class MainActivity extends AppCompatActivity {
                     if (BluetoothAdapter.STATE_CONNECTED == 2) {
                         Log.d(TAG1, "Open BT with paired");
 //                    login("superhero1");
+
+                        try {
+                            TimeUnit.SECONDS.sleep(3);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent = new Intent(MainActivity.this, ChatList.class);
+                        startActivity(intent);
 //                        for (int i = 0; i < 100; i++) {
 //                            Log.d(TAG1, "Open BT with paired: " + i);
 //                            try {
