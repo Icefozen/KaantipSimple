@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:padding="10dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="icefozen.java.kaantip.TextToSpeech">
+
 
     <ImageButton
         android:layout_width="40dp"
@@ -22,4 +25,4 @@
         android:background="@drawable/backgroud_right" />
 
 
-</RelativeLayout>
+</LinearLayout>

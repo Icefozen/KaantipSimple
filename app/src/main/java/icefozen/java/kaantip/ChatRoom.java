@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,9 +25,11 @@ import java.util.Locale;
 
 public class ChatRoom extends AppCompatActivity {
 
-    private ImageButton sendBtn, backBtn, micBtn;
+    private ImageButton sendBtn, backBtn, micBtn, playBtn;
     private TextView roomName;
     private EditText typing;
+
+    private TextToSpeech textToSpeech;
 
     private RecyclerView conversations;
 
@@ -44,6 +47,8 @@ public class ChatRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
+        playBtn = findViewById(R.id.playBtn);
+
         micBtn = findViewById(R.id.micBtn);
         backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendBtn);
@@ -55,6 +60,23 @@ public class ChatRoom extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         conversations.setLayoutManager(linearLayoutManager);
+
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = textToSpeech.setLanguage(Locale.ENGLISH);
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "Language not supported");
+                    } else {
+                        playBtn.setEnabled(true);
+                    }
+                } else {
+                    Log.e("TTS", "Initialization failed");
+                }
+            }
+        });
 
         chatOnConversation = new ArrayList<>();
 
@@ -91,6 +113,12 @@ public class ChatRoom extends AppCompatActivity {
 
     }
 
+    public void speak() {
+        String msg = "Hello";
+
+        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -120,6 +148,13 @@ public class ChatRoom extends AppCompatActivity {
 
         messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
         conversations.setAdapter(messageAdapter);
+
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speak();
+            }
+        });
 
     }
 }
