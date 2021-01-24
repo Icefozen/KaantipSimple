@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,9 +18,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ChatRoom extends AppCompatActivity {
 
-    private ImageButton sendBtn;
+    private ImageButton sendBtn,backBtn;
     private TextView roomName;
     private EditText typing;
 
@@ -31,11 +33,12 @@ public class ChatRoom extends AppCompatActivity {
 
     private static final String TAG = "ChatRoom";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
-
+        backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
         typing = findViewById(R.id.typingText);
@@ -47,6 +50,11 @@ public class ChatRoom extends AppCompatActivity {
         conversations.setLayoutManager(linearLayoutManager);
 
         chatOnConversation = new ArrayList<>();
+
+        backBtn.setOnClickListener(View -> {
+            Intent intent = new Intent(ChatRoom.this,ChatList.class);
+            startActivity(intent);
+        });
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override

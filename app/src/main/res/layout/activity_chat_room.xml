@@ -21,23 +21,22 @@
             android:id="@+id/roomName_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/backBtn"
-            android:layout_centerInParent="true"
 
+            android:layout_marginStart="-61dp"
+            android:layout_marginLeft="-61dp"
+            android:layout_toEndOf="@+id/backBtn"
+            android:layout_toRightOf="@id/backBtn"
+            android:background="@android:color/transparent"
             android:gravity="center"
-            android:layout_centerHorizontal="true"
             android:text="ห้องสนทนา"
-            android:textSize="26dp"
-            android:background="@android:color/transparent" />
+            android:textSize="26dp" />
 
         <ImageButton
             android:id="@+id/backBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginRight="30dp"
-            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
+            android:layout_marginRight="30dp"
             android:background="@mipmap/ic_launcher_back" />
 
 
