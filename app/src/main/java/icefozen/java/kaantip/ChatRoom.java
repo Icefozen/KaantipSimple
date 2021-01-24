@@ -1,5 +1,6 @@
 package icefozen.java.kaantip;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +19,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class ChatRoom extends AppCompatActivity {
 
-    private ImageButton sendBtn,backBtn;
+    private ImageButton sendBtn, backBtn, micBtn;
     private TextView roomName;
     private EditText typing;
 
@@ -33,11 +36,15 @@ public class ChatRoom extends AppCompatActivity {
 
     private static final String TAG = "ChatRoom";
 
+    private static final int RECOGNIZER_RESULT = 4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+
+        micBtn = findViewById(R.id.micBtn);
         backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
@@ -70,6 +77,33 @@ public class ChatRoom extends AppCompatActivity {
                 typing.setText("");
             }
         });
+
+        micBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
+                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                startActivityForResult(speechIntent, RECOGNIZER_RESULT);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RECOGNIZER_RESULT && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            typing.setText(matches.get(0));
+            Log.d(TAG, "text is : " + matches.get(0));
+        }
+        else {
+            Log.d(TAG, "request code is " + requestCode);
+        }
+
 
     }
 
