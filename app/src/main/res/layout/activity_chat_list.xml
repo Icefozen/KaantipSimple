@@ -10,6 +10,7 @@
         android:id="@+id/imageButton"
         android:layout_width="422dp"
         android:layout_height="82dp"
+        android:background="@color/text_choose_room"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.545"

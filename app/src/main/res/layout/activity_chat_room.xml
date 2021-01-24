@@ -1,18 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatRoom">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    android:id="@+id/imageButton3"
+    android:id="@+id/roomName_text"
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_Head"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="@color/chat_bg"
+        android:layout_alignParentTop="true"
+        android:padding="20dp" >
+
+        <TextView
+            android:id="@+id/roomName_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/backBtn"
+            android:layout_centerInParent="true"
+
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:text="ห้องสนทนา"
+            android:textSize="26dp"
+            android:background="@android:color/transparent" />
+
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/ic_launcher_back" />
+
+
+    </RelativeLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout_Head"
+        android:layout_above="@+id/relativeLayout"
+        />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:padding="5dp" >
+
+        <EditText
+            android:id="@+id/typingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/sendBtn"
+            android:layout_toRightOf="@id/micBtn"
+            android:background="@android:color/transparent"
+            android:hint="พิมพ์ข้อความ" />
+
+        <ImageButton
+            android:id="@+id/sendBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/ic_launcher_send" />
+
+        <ImageButton
+            android:id="@+id/stopBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/ic_launcher_stop" />
+
+        <ImageButton
+            android:id="@+id/micBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/ic_launcher_mic" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

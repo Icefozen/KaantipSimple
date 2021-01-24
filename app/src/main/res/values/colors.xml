@@ -21,4 +21,5 @@
     <color name="header">#FFD3C9AD</color>
     <color name="chat_room_btn">#FFE9DEBF</color>
     <color name="text_choose_room">#FFB0B0AD</color>
+    <color name="chat_bg">#FFDBBB87</color>
 </resources>

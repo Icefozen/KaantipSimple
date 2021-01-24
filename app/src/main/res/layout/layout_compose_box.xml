@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
-        android:background="@drawable/compose_box"
+        android:background="@drawable/ic_photo_background"
         android:layout_toEndOf="@id/ivArrow"
         android:layout_toStartOf="@+id/boxEndLayout"
         android:layout_height="wrap_content">
@@ -50,7 +50,7 @@
             android:layout_alignBottom="@+id/record_time"
             android:visibility="gone"
             android:id="@+id/ivDelete"
-            android:src="@drawable/ic_delete_24dp"
+            android:src="@drawable/ic_photo_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <SeekBar
@@ -81,13 +81,13 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            tools:visibility="visible"
-            android:visibility="gone"
             android:id="@+id/ivSend"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="8dp"
-            android:src="@drawable/ic_send"
-            android:layout_height="wrap_content"/>
+            android:src="@drawable/ic_photo_background"
+            android:visibility="gone"
+            tools:visibility="visible" />
         <ImageView
             android:layout_margin="8dp"
             android:src="@color/white"
