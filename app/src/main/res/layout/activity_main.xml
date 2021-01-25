@@ -39,10 +39,9 @@
                 android:layout_below="@+id/ivLogo"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="105dp"
-                android:layout_marginTop="17dp"
-                android:layout_marginEnd="105dp"
-                android:text="Kaantip"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="กรรณทิพย์"
                 android:textColor="@color/blue"
                 android:textSize="43sp"
                 android:textStyle="bold" />

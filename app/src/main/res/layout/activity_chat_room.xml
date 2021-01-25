@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ChatRoom">
 
-    android:id="@+id/imageButton3"
-    android:id="@+id/roomName_text"
-
     <RelativeLayout
         android:id="@+id/relativeLayout_Head"
         android:layout_width="match_parent"

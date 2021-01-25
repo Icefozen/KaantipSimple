@@ -1,13 +1,20 @@
 package icefozen.java.kaantip;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -166,13 +173,18 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG1, "Open BT with paired");
 //                    login("superhero1");
 
-                        try {
-                            TimeUnit.SECONDS.sleep(2);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Intent intent = new Intent(MainActivity.this, ChatList.class);
-                        startActivity(intent);
+                        // Slow time open app
+//                        try {
+//                            TimeUnit.SECONDS.sleep(2);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+
+                        // Open app
+
+//                        Intent intent = new Intent(MainActivity.this, ChatList.class);
+//                        startActivity(intent);
+
 //                        for (int i = 0; i < 100; i++) {
 //                            Log.d(TAG1, "Open BT with paired: " + i);
 //                            try {
@@ -181,6 +193,33 @@ public class MainActivity extends AppCompatActivity {
 //                                e.printStackTrace();
 //                            }
 //                        }
+                        String message = "เปิดแอปเพื่อเริ่มสนทนา";
+
+                        String CHANNEL_ID = "notificationID";
+
+                        notificatioChannel();
+
+                        Intent intent = new Intent(MainActivity.this, ChatRoom.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+
+                        String textTitle = "การแจ้งเตือน";
+                        String textContent = "ตรวจจับคลื่นสมอง";
+
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                                .setContentTitle(textTitle)
+                                .setContentText(textContent)
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                .setContentIntent(pendingIntent)
+                                .setAutoCancel(true)
+                                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                        notificationManager.notify(0, builder.build());
+                        Log.d("Notification", "PASS");
+
+
                     } else {
                         for (int i = 0; i < 100; i++) {
                             Log.d(TAG1, "Open BT without paired : " + i);
@@ -205,5 +244,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
+        public void notificatioChannel() {
+            String CHANNEL_ID = "notificationID";
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "NotificationChannel";
+                String description = "hello World";
+                int important = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, important);
+                channel.setDescription(description);
+
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
     }
 }
