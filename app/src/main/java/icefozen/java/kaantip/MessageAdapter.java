@@ -1,6 +1,8 @@
 package icefozen.java.kaantip;
 
 import android.content.Context;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private Context mContext;
 
-    private ArrayList<ChatModel> mChat;
+    public ArrayList<ChatModel> mChat;
 
     public MessageAdapter(Context mContext, ArrayList<ChatModel> mChat){
         this.mContext = mContext;
@@ -33,6 +36,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         ChatModel chat = mChat.get(position);
 
         holder.show_message.setText(chat.getMessage());
@@ -48,12 +52,49 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         public TextView show_message;
         public ImageButton playBtn;
+        private TextToSpeech textToSpeech;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             show_message = itemView.findViewById(R.id.chatText);
             playBtn = itemView.findViewById(R.id.playBtn);
+
+            // Text to speech setting
+            textToSpeech = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = textToSpeech.setLanguage(Locale.getDefault());
+                        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            Log.d("TTS", "Language not supported");
+                        } else {
+                            Log.d("TTS", "Language passed");
+                        }
+                    } else {
+                        Log.e("TTS", "Initialization failed");
+                    }
+                }
+            });
+
+            // Text to speech function
+            playBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    speak(mChat.get(position).getMessage());
+
+                    speak(mChat.get(mChat.size()-1).getMessage());
+                }
+            });
+
+        }
+
+        public void speak(String msg) {
+
+            textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
+            for (int i=0; i<mChat.size(); i++) {
+                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
+            }
 
         }
     }

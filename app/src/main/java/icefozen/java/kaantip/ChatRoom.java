@@ -29,8 +29,6 @@ public class ChatRoom extends AppCompatActivity {
     private TextView roomName;
     private EditText typing;
 
-    private TextToSpeech textToSpeech;
-
     private RecyclerView conversations;
 
     private ArrayList<ChatModel> chatOnConversation;
@@ -48,43 +46,28 @@ public class ChatRoom extends AppCompatActivity {
         setContentView(R.layout.activity_chat_room);
 
         playBtn = findViewById(R.id.playBtn);
-
         micBtn = findViewById(R.id.micBtn);
         backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
         typing = findViewById(R.id.typingText);
 
+        //setting RecyclerView
         conversations = findViewById(R.id.recycle_view);
         conversations.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setStackFromEnd(true);
         conversations.setLayoutManager(linearLayoutManager);
 
-        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    int result = textToSpeech.setLanguage(Locale.ENGLISH);
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "Language not supported");
-                    } else {
-                        playBtn.setEnabled(true);
-                    }
-                } else {
-                    Log.e("TTS", "Initialization failed");
-                }
-            }
-        });
-
         chatOnConversation = new ArrayList<>();
 
+        // Back function
         backBtn.setOnClickListener(View -> {
-            Intent intent = new Intent(ChatRoom.this,ChatList.class);
+            Intent intent = new Intent(ChatRoom.this, ChatList.class);
             startActivity(intent);
         });
 
+        // Send function
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,14 +75,14 @@ public class ChatRoom extends AppCompatActivity {
                 if (!msg.equals("")) {
 
                     readMessages(msg);
-                }
-                else {
+                } else {
                     Toast.makeText(ChatRoom.this, "ไม่สามารถส่งข้อความว่างได้", Toast.LENGTH_LONG).show();
                 }
                 typing.setText("");
             }
         });
 
+        // Speech to text
         micBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,13 +93,6 @@ public class ChatRoom extends AppCompatActivity {
                 startActivityForResult(speechIntent, RECOGNIZER_RESULT);
             }
         });
-
-    }
-
-    public void speak() {
-        String msg = "Hello";
-
-        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
     }
 
     @Override
@@ -131,14 +107,9 @@ public class ChatRoom extends AppCompatActivity {
         else {
             Log.d(TAG, "request code is " + requestCode);
         }
-
-
     }
 
     public void readMessages(String msg){
-
-
-//        ChatModel chat = new ChatModel(msg);
 
         chatOnConversation.add(new ChatModel(msg));
 
@@ -148,13 +119,6 @@ public class ChatRoom extends AppCompatActivity {
 
         messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
         conversations.setAdapter(messageAdapter);
-
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speak();
-            }
-        });
 
     }
 }
