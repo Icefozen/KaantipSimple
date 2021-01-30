@@ -16,6 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             >
 
 
@@ -29,7 +30,7 @@
                 android:layout_marginStart="45dp"
                 android:layout_marginTop="195dp"
                 android:layout_marginEnd="45dp"
-                android:src="@drawable/ic_photo_background" />
+                android:src="@drawable/ic_logo_main2" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvKS"
@@ -42,7 +43,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="กรรณทิพย์"
-                android:textColor="@color/blue"
+                android:textColor="@color/kaantip_name"
                 android:textSize="43sp"
                 android:textStyle="bold" />
 

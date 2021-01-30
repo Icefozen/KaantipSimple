@@ -1,25 +1,31 @@
 package icefozen.java.kaantip;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -38,6 +44,11 @@ public class ChatRoom extends AppCompatActivity {
     private static final String TAG = "ChatRoom";
 
     private static final int RECOGNIZER_RESULT = 4;
+
+    private FirebaseUser firebaseUser;
+    DatabaseReference databaseReference;
+
+    private Intent intent;
 
 
     @Override
@@ -59,12 +70,31 @@ public class ChatRoom extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         conversations.setLayoutManager(linearLayoutManager);
 
-        chatOnConversation = new ArrayList<>();
-
         // Back function
         backBtn.setOnClickListener(View -> {
             Intent intent = new Intent(ChatRoom.this, ChatList.class);
+
             startActivity(intent);
+        });
+
+        // Database
+        intent = getIntent();
+
+        String roomID = intent.getStringExtra("roomID");
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Rooms").child(roomID);
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                readMessages(roomID, firebaseUser.getUid());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
 
         // Send function
@@ -73,8 +103,7 @@ public class ChatRoom extends AppCompatActivity {
             public void onClick(View v) {
                 String msg = typing.getText().toString();
                 if (!msg.equals("")) {
-
-                    readMessages(msg);
+                    sendMessage(msg, firebaseUser.getUid(), roomID);
                 } else {
                     Toast.makeText(ChatRoom.this, "ไม่สามารถส่งข้อความว่างได้", Toast.LENGTH_LONG).show();
                 }
@@ -109,16 +138,56 @@ public class ChatRoom extends AppCompatActivity {
         }
     }
 
-    public void readMessages(String msg){
+    public void readMessages(String roomId, String sender){
 
-        chatOnConversation.add(new ChatModel(msg));
+        chatOnConversation = new ArrayList<>();
 
-        for (ChatModel str : chatOnConversation){
-            Log.d(TAG, "Send :  " + str.getMessage());
-        }
+        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatOnConversation.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Log.d(TAG, "snapshot = " + snapshot.getChildren());
+                    ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
+                    if (chatModel.getSender().equals(sender) && chatModel.getRoom().equals(roomId)) {
+                        chatOnConversation.add(chatModel);
+                    }
+                    messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
+                    conversations.setAdapter(messageAdapter);
+                }
+            }
 
-        messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
-        conversations.setAdapter(messageAdapter);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+    // Local Chat
+//    public void readMessages(String msg) {
+//
+//        chatOnConversation = new ArrayList<>();
+//
+//        chatOnConversation.add(new ChatModel(msg));
+//
+//        for (ChatModel str : chatOnConversation){
+//            Log.d(TAG, "Send :  " + str.getMessage());
+//        }
+//
+//        messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
+//        conversations.setAdapter(messageAdapter);
+//    }
+
+    public void sendMessage(String msg, String sender, String room) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("message", msg);
+        hashMap.put("room", room);
+
+        reference.child("Chats").push().setValue(hashMap);
     }
 }

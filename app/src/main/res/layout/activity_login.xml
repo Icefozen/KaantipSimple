@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="100dp"
+        android:orientation="vertical"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp">
+
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingTop="20sp"
+            android:shadowColor="#0E0E0E"
+            android:text="เข้าสู่ระบบ"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="45sp" />
+
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="25dp"/>
+
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/google_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:foregroundGravity="center"/>
+
+
+
+
+    </LinearLayout>
+</ScrollView>

@@ -18,6 +18,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -36,23 +40,37 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_BLU = 1;
     public boolean checkThread = true;
 
-    threadBackground testThred;
+    threadBackground testThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (checkThread) {
-            testThred = new threadBackground();
-            testThred.start();
+            testThread = new threadBackground();
+            testThread.start();
         } else {
-            testThred.interrupt();
+            testThread.interrupt();
             Log.d(TAG1, "Welcome");
-//            login("superhero1");
         }
+
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+
+    }
+
+    private void updateUI(FirebaseUser currentUser) {
     }
 
     class threadBackground extends Thread {
@@ -199,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
                         notificatioChannel();
 
-                        Intent intent = new Intent(MainActivity.this, ChatRoom.class);
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
 
@@ -230,16 +248,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
-//                    } else {
-//                        for (int i = 0; i < 10; i++) {
-//                            Log.d(TAG1, "Close BT : " + i);
-//                            try {
-//                                Thread.sleep(1000);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
+
                 }
             }
 
@@ -250,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence name = "NotificationChannel";
-                String description = "hello World";
+                String description = "มีการตรวจจับความตั้งใจ";
                 int important = NotificationManager.IMPORTANCE_DEFAULT;
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, important);
                 channel.setDescription(description);

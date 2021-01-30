@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +23,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context mContext;
 
     public ArrayList<ChatModel> mChat;
+
+    private FirebaseUser firebaseUser;
+
+    private boolean check;
 
     public MessageAdapter(Context mContext, ArrayList<ChatModel> mChat){
         this.mContext = mContext;
@@ -78,12 +84,22 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             });
 
             // Text to speech function
+            check = true;
             playBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
 //                    speak(mChat.get(position).getMessage());
 
-                    speak(mChat.get(mChat.size()-1).getMessage());
+                    if (check){
+                        playBtn.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
+                        speak(mChat.get(mChat.size()-1).getMessage());
+                    }
+                    else {
+                        playBtn.setImageResource(R.mipmap.ic_launcher_play);
+                    }
+                    check = !check;
+
                 }
             });
 
@@ -92,10 +108,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public void speak(String msg) {
 
             textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
-            for (int i=0; i<mChat.size(); i++) {
-                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
-            }
-
+//            for (int i=0; i<mChat.size(); i++) {
+//                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
+//            }
         }
     }
+
 }
