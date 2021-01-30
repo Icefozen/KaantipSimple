@@ -72,7 +72,7 @@ public class ChatList extends AppCompatActivity {
 //            startActivity(intentForGoToChatRoom);
         });
 
-        edit = findViewById(R.id.editBtn);
+        edit = findViewById(R.id.logout);
         edit.setOnClickListener(View -> {
             FirebaseAuth.getInstance().signOut();
             Intent intentForBackToLogin = new Intent(ChatList.this, LoginActivity.class);
