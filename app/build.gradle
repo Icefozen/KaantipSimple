@@ -14,6 +14,15 @@ android {
         versionCode 1
         versionName "1.0"
 
+//        ndk {
+//            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+//        }
+
+        sourceSets.main {
+            jniLibs.srcDir 'lib'
+            jni.srcDirs = [] //disable automatic ndk-build call
+        }
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +48,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'com.google.firebase:firebase-database:19.6.0'
+    implementation files('lib/androidplot-core-0.6.1.jar')
+    implementation files('lib/libStreamSDK.jar')
+    implementation files('lib/NskAlgoSdk.jar')
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -49,4 +61,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'com.shobhitpuri.custombuttons:google-signin:1.1.0'
+
+//    implementation "com.androidplot:androidplot-core:1.5.7"
 }

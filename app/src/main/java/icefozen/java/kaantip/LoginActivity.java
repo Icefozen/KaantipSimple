@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,16 +33,18 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
 
+    private Button room1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        room1 = findViewById(R.id.roomChat1);
+
         mAuth = FirebaseAuth.getInstance();
 
-
         createRequest();
-
 
         findViewById(R.id.google_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +53,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+//    private void makeRoomID(String roomid) {
+//        Intent intentForGoToChatRoom = new Intent(LoginActivity.this, ChatRoom.class);
+//        intentForGoToChatRoom.putExtra("roomID", roomid);
+//        startActivity(intentForGoToChatRoom);
+//    }
 
     private void createRequest() {
 
@@ -76,10 +85,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){
-            Intent intent = new Intent(getApplicationContext(), ChatList.class);
+//            room1 = findViewById(R.id.roomChat1);
+//            makeRoomID(String.valueOf(room1.getId()));
+            Intent intent = new Intent(getApplicationContext(), ChatRoom.class);
             startActivity(intent);
         }
     }
@@ -126,7 +136,8 @@ public class LoginActivity extends AppCompatActivity {
                             databaseReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Intent intent = new Intent(getApplicationContext(), ChatList.class);
+//                                    makeRoomID(String.valueOf(room1.getId()));
+                                    Intent intent = new Intent(getApplicationContext(), ChatRoom.class);
                                     startActivity(intent);
                                     finish();
                                 }

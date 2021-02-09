@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -48,7 +49,12 @@ public class ChatRoom extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     DatabaseReference databaseReference;
 
-    private Intent intent;
+    private TextToSpeech textToSpeech;
+
+//    private Intent intent;
+    private String roomID;
+
+    private BackgroundTread backgroundTread;
 
 
     @Override
@@ -62,6 +68,13 @@ public class ChatRoom extends AppCompatActivity {
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
         typing = findViewById(R.id.typingText);
+
+//        try {
+//            backgroundTread = new BackgroundTread();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        backgroundTread.start();
 
         //setting RecyclerView
         conversations = findViewById(R.id.recycle_view);
@@ -78,17 +91,19 @@ public class ChatRoom extends AppCompatActivity {
         });
 
         // Database
-        intent = getIntent();
-
-        String roomID = intent.getStringExtra("roomID");
+//        intent = getIntent();
+//        roomID = intent.getStringExtra("roomID");
+        roomID = "2131231001";
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         databaseReference = FirebaseDatabase.getInstance().getReference("Rooms").child(roomID);
+//        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                readMessages(roomID, firebaseUser.getUid());
+                readMessages(firebaseUser.getUid());
             }
 
             @Override
@@ -103,7 +118,8 @@ public class ChatRoom extends AppCompatActivity {
             public void onClick(View v) {
                 String msg = typing.getText().toString();
                 if (!msg.equals("")) {
-                    sendMessage(msg, firebaseUser.getUid(), roomID);
+//                    sendMessage(msg, firebaseUser.getUid(), roomID);
+                    sendMessage(msg, firebaseUser.getUid());
                 } else {
                     Toast.makeText(ChatRoom.this, "ไม่สามารถส่งข้อความว่างได้", Toast.LENGTH_LONG).show();
                 }
@@ -117,9 +133,26 @@ public class ChatRoom extends AppCompatActivity {
             public void onClick(View v) {
                 Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
+//                speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
                 speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
                 startActivityForResult(speechIntent, RECOGNIZER_RESULT);
+            }
+        });
+
+        //text to speech
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = textToSpeech.setLanguage(Locale.getDefault());
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.d("TTS", "Language not supported");
+                    } else {
+                        Log.d("TTS", "Language passed");
+                    }
+                } else {
+                    Log.e("TTS", "Initialization failed");
+                }
             }
         });
     }
@@ -130,7 +163,13 @@ public class ChatRoom extends AppCompatActivity {
 
         if (requestCode == RECOGNIZER_RESULT && resultCode == RESULT_OK) {
             ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            typing.setText(matches.get(0));
+
+//            typing.setText(matches.get(0));
+            if (!matches.get(0).equals("")) {
+//                sendMessage(matches.get(0), firebaseUser.getUid(), roomID);
+                sendMessage(matches.get(0), firebaseUser.getUid());
+            }
+
             Log.d(TAG, "text is : " + matches.get(0));
         }
         else {
@@ -138,7 +177,7 @@ public class ChatRoom extends AppCompatActivity {
         }
     }
 
-    public void readMessages(String roomId, String sender){
+    public void readMessages(String sender){
 
         chatOnConversation = new ArrayList<>();
 
@@ -150,7 +189,7 @@ public class ChatRoom extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Log.d(TAG, "snapshot = " + snapshot.getChildren());
                     ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
-                    if (chatModel.getSender().equals(sender) && chatModel.getRoom().equals(roomId)) {
+                    if (chatModel.getSender().equals(sender)) {
                         chatOnConversation.add(chatModel);
                     }
                     messageAdapter = new MessageAdapter(ChatRoom.this, chatOnConversation);
@@ -180,14 +219,54 @@ public class ChatRoom extends AppCompatActivity {
 //        conversations.setAdapter(messageAdapter);
 //    }
 
-    public void sendMessage(String msg, String sender, String room) {
+
+    public void sendMessage(String msg, String sender) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("message", msg);
-        hashMap.put("room", room);
 
         reference.child("Chats").push().setValue(hashMap);
+        speakTTS(msg);
+    }
+
+    public void sendMessageByIndividuals(String msg, String sender) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("message", msg);
+        reference.child("Chats").push().setValue(hashMap);
+    }
+
+
+    public void speakTTS(String msg) {
+        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
+//            for (int i=0; i<mChat.size(); i++) {
+//                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
+//            }
+    }
+
+    class BackgroundTread extends Thread {
+
+        private static final String TAG1 = "Background Tread = ";
+
+        public BackgroundTread() throws InterruptedException {
+
+            while (true) {
+                Thread.sleep(50000);
+                Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+//            speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
+                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                startActivityForResult(speechIntent, RECOGNIZER_RESULT);
+                Log.d(TAG1, "hello world");
+                Thread.sleep(5000);
+            }
+
+        }
+
+
     }
 }

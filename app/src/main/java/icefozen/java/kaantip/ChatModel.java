@@ -14,6 +14,11 @@ public class ChatModel {
         this.sender = sender;
         this.room = room;
     }
+    public ChatModel(String message, String room){
+
+        this.message = message;
+        this.room = room;
+    }
 
     public ChatModel(String message) {
         this.message = message;

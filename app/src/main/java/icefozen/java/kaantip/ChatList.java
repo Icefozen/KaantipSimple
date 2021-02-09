@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,7 +20,8 @@ import java.util.HashMap;
 
 public class ChatList extends AppCompatActivity {
 
-    private Button room1, room2, room3, room4, room5, edit;
+    private Button room1, room2, room3, room4, room5;
+    private ImageView edit;
 
     private String message = "เปิดแอปเพื่อเริ่มสนทนา";
 
@@ -73,6 +75,7 @@ public class ChatList extends AppCompatActivity {
         });
 
         edit = findViewById(R.id.logout);
+
         edit.setOnClickListener(View -> {
             FirebaseAuth.getInstance().signOut();
             Intent intentForBackToLogin = new Intent(ChatList.this, LoginActivity.class);

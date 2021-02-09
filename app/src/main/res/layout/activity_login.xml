@@ -48,6 +48,12 @@
             android:layout_gravity="center"
             android:foregroundGravity="center"/>
 
+<!--        <Button-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/neurosky"-->
+<!--            android:background="@color/chat_bg" />-->
+
 
 
 

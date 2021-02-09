@@ -1,2 +1,5 @@
+include ':androidplot-core-0.6.1'
+include ':libStreamSDK'
+include ':NskAlgoSdk'
 include ':app'
 rootProject.name = "Kaantip"
