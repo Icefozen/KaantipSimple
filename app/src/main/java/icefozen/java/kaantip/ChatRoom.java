@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -24,6 +25,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.neurosky.AlgoSdk.NskAlgoSdk;
+import com.neurosky.AlgoSdk.NskAlgoType;
+import com.neurosky.connection.TgStreamReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +56,7 @@ public class ChatRoom extends AppCompatActivity {
 
     private TextToSpeech textToSpeech;
 
-//    private Intent intent;
+    //    private Intent intent;
     private String roomID;
 
     private BackgroundTread backgroundTread;
@@ -169,13 +173,12 @@ public class ChatRoom extends AppCompatActivity {
             }
 
             Log.d(TAG, "text is : " + matches.get(0));
-        }
-        else {
+        } else {
             Log.d(TAG, "request code is " + requestCode);
         }
     }
 
-    public void readMessages(String sender){
+    public void readMessages(String sender) {
 
         chatOnConversation = new ArrayList<>();
 
@@ -248,25 +251,10 @@ public class ChatRoom extends AppCompatActivity {
 
     class BackgroundTread extends Thread {
 
-        private static final String TAG1 = "Background Tread = ";
-
         public BackgroundTread() {
-
-//            while (true) {
-//                Thread.sleep(50000);
-//                Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-//                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-////            speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
-//                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-//                startActivityForResult(speechIntent, RECOGNIZER_RESULT);
-//                Log.d(TAG1, "hello world");
-//                Thread.sleep(5000);
-//            }
-
 
 
         }
-
 
     }
 }

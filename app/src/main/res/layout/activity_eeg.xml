@@ -238,15 +238,17 @@
         android:enabled="false" />
 
     <Button
+        android:id="@+id/setAlgosButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set Algos"
-        android:id="@+id/setAlgosButton"
-        android:textSize="12dp"
+        android:layout_below="@+id/fCheckBox"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="-2dp"
         android:maxHeight="50dp"
         android:minHeight="50dp"
-        android:layout_below="@+id/fCheckBox"
-        android:layout_alignParentRight="true" />
+        android:text="Set Algos"
+        android:textSize="12dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
