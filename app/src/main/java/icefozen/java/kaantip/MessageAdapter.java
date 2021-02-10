@@ -46,7 +46,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         ChatModel chat = mChat.get(position);
 
         holder.show_message.setText(chat.getMessage());
-        holder.playBtn.setImageResource(R.mipmap.ic_launcher_play);
+        holder.playBtn.setImageResource(R.drawable.ic_baseline_play_circle_filled_24);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                         speak(mChat.get(mChat.size()-1).getMessage());
                     }
                     else {
-                        playBtn.setImageResource(R.mipmap.ic_launcher_play);
+                        playBtn.setImageResource(R.drawable.ic_baseline_play_circle_filled_24);
                     }
                     check = !check;
 

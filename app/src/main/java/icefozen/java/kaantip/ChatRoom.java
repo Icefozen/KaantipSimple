@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 
 public class ChatRoom extends AppCompatActivity {
@@ -64,17 +65,14 @@ public class ChatRoom extends AppCompatActivity {
 
         playBtn = findViewById(R.id.playBtn);
         micBtn = findViewById(R.id.micBtn);
-        backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
         typing = findViewById(R.id.typingText);
 
-//        try {
-//            backgroundTread = new BackgroundTread();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        backgroundTread.start();
+//        backBtn = findViewById()
+
+        backgroundTread = new BackgroundTread();
+        backgroundTread.start();
 
         //setting RecyclerView
         conversations = findViewById(R.id.recycle_view);
@@ -84,11 +82,11 @@ public class ChatRoom extends AppCompatActivity {
         conversations.setLayoutManager(linearLayoutManager);
 
         // Back function
-        backBtn.setOnClickListener(View -> {
-            Intent intent = new Intent(ChatRoom.this, ChatList.class);
-
-            startActivity(intent);
-        });
+//        backBtn.setOnClickListener(View -> {
+//            Intent intent = new Intent(ChatRoom.this, ChatList.class);
+//
+//            startActivity(intent);
+//        });
 
         // Database
 //        intent = getIntent();
@@ -252,18 +250,20 @@ public class ChatRoom extends AppCompatActivity {
 
         private static final String TAG1 = "Background Tread = ";
 
-        public BackgroundTread() throws InterruptedException {
+        public BackgroundTread() {
 
-            while (true) {
-                Thread.sleep(50000);
-                Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//            speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
-                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-                startActivityForResult(speechIntent, RECOGNIZER_RESULT);
-                Log.d(TAG1, "hello world");
-                Thread.sleep(5000);
-            }
+//            while (true) {
+//                Thread.sleep(50000);
+//                Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+////            speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
+//                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+//                startActivityForResult(speechIntent, RECOGNIZER_RESULT);
+//                Log.d(TAG1, "hello world");
+//                Thread.sleep(5000);
+//            }
+
+
 
         }
 

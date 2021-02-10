@@ -69,6 +69,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
     class threadBackground extends Thread {
 
         // canned data variables
@@ -126,6 +146,15 @@ public class MainActivity extends AppCompatActivity {
 
                     Log.d(TAG1, "pass 2");
 
+                    Log.d(TAG1, "go to sleep ");
+                    try {
+                        Thread.sleep(10000);
+//                        onRestart();
+                        onStart();
+                        Log.d(TAG1, "Resume");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     tgStreamReader = new TgStreamReader(bluetoothAdapter,callback);
 
@@ -139,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     // (4) Demo of  using connect() and start() to replace connectAndStart(),
                     // please call start() when the state is changed to STATE_CONNECTED
                     tgStreamReader.connectAndStart();
-                    nskAlgoSdk.NskAlgoStart(false);
+                    nskAlgoSdk.NskAlgoStart(true);
 
                     nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
                         @Override
@@ -245,21 +274,21 @@ public class MainActivity extends AppCompatActivity {
                         //(9) demo of recording raw data , stop() will call stopRecordRawData,
                         //or you can add a button to control it.
                         //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
-//                    tgStreamReader.startRecordRawData();
+                        tgStreamReader.startRecordRawData();
                         break;
                     case ConnectionStates.STATE_GET_DATA_TIME_OUT:
                         // Do something when getting data timeout
 
                         //(9) demo of recording raw data, exception handling
-                        //tgStreamReader.stopRecordRawData();
+                        tgStreamReader.stopRecordRawData();
 
 //                        showToast("Get data time out!", Toast.LENGTH_SHORT);
                         Log.d(TAG1, "Get data time out!");
 
-                        if (tgStreamReader != null && tgStreamReader.isBTConnected()) {
-                            tgStreamReader.stop();
-                            tgStreamReader.close();
-                        }
+//                        if (tgStreamReader != null && tgStreamReader.isBTConnected()) {
+//                            tgStreamReader.stop();
+//                            tgStreamReader.close();
+//                        }
 
                         break;
                     case ConnectionStates.STATE_STOPPED:

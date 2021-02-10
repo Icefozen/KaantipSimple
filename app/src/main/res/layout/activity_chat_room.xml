@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatRoom">
+    tools:context=".ChatRoom"
+    android:startColor="@color/backgroud"
+    android:endColor="@color/backgroud2"
+    android:angle="90">
 
     <RelativeLayout
         android:id="@+id/relativeLayout_Head"
@@ -16,25 +19,13 @@
 
         <TextView
             android:id="@+id/roomName_text"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginStart="-61dp"
-            android:layout_marginLeft="-61dp"
-            android:layout_toEndOf="@+id/backBtn"
-            android:layout_toRightOf="@id/backBtn"
             android:background="@android:color/transparent"
             android:gravity="center"
             android:text="ห้องสนทนา"
+            android:textColor="@color/white"
             android:textSize="26dp" />
-
-        <ImageButton
-            android:id="@+id/backBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="30dp"
-            android:background="@mipmap/ic_launcher_back" />
 
 
     </RelativeLayout>
@@ -52,7 +43,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/backgroud2"
         android:layout_alignParentBottom="true"
         android:padding="5dp" >
 
@@ -63,7 +54,6 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/sendBtn"
             android:layout_toRightOf="@id/micBtn"
-            android:background="@android:color/transparent"
             android:hint="พิมพ์ข้อความ" />
 
         <ImageButton
@@ -72,15 +62,9 @@
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@mipmap/ic_launcher_send" />
+            android:background="@drawable/ic_baseline_send_24" />
 
-        <ImageButton
-            android:id="@+id/stopBtn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:background="@mipmap/ic_launcher_stop" />
+
 
         <ImageButton
             android:id="@+id/micBtn"
@@ -88,7 +72,7 @@
             android:layout_height="40dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:background="@mipmap/ic_launcher_mic" />
+            android:background="@drawable/ic_baseline_mic_24" />
 
 
     </RelativeLayout>
