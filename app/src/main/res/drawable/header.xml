@@ -2,12 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <corners
-        android:radius="20dp"
-        android:topLeftRadius="20dp" />
-
-    <solid android:color="@color/chat_bg" />
-
     <gradient
         android:startColor="#E3C090"
         android:endColor="#E3C060"

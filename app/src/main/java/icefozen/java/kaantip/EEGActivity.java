@@ -515,11 +515,16 @@ public class EEGActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         // change UI elements here
-                        AddValueToPlot(bp_deltaSeries, fDelta);
-                        AddValueToPlot(bp_thetaSeries, fTheta);
-                        AddValueToPlot(bp_alphaSeries, fAlpha);
-                        AddValueToPlot(bp_betaSeries, fBeta);
-                        AddValueToPlot(bp_gammaSeries, fGamma);
+//                        AddValueToPlot(bp_deltaSeries, fDelta);
+//                        AddValueToPlot(bp_thetaSeries, fTheta);
+//                        AddValueToPlot(bp_alphaSeries, fAlpha);
+//                        AddValueToPlot(bp_betaSeries, fBeta);
+//                        AddValueToPlot(bp_gammaSeries, fGamma);
+                        Log.d(TAG, "delta : " + fDelta);
+                        Log.d(TAG, "theta : " + fTheta);
+                        Log.d(TAG, "alpha : " + fAlpha);
+                        Log.d(TAG, "beta : " + fBeta);
+                        Log.d(TAG, "gamma : " + fGamma);
                     }
                 });
             }

@@ -5,15 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatRoom"
-    android:startColor="@color/backgroud"
-    android:endColor="@color/backgroud2"
-    android:angle="90">
+    android:background="@color/light_grey"
+    >
 
     <RelativeLayout
         android:id="@+id/relativeLayout_Head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/chat_bg"
+        android:background="@drawable/header"
         android:layout_alignParentTop="true"
         android:padding="20dp" >
 
@@ -24,7 +23,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:text="ห้องสนทนา"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="26dp" />
 
 
@@ -43,7 +42,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/backgroud2"
+        android:background="@color/white"
         android:layout_alignParentBottom="true"
         android:padding="5dp" >
 
@@ -62,9 +61,7 @@
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@drawable/ic_baseline_send_24" />
-
-
+            android:background="@drawable/ic_baseline_send_24" />a
 
         <ImageButton
             android:id="@+id/micBtn"

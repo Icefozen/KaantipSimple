@@ -62,32 +62,34 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             TimeUnit.SECONDS.sleep(2);
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, ChatRoom.class);
             startActivity(intent);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//        startActivity(intent);
+//    }
+//
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//        startActivity(intent);
+//    }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        Log.d(TAG, "onStart: ");
+//    }
 
     class threadBackground extends Thread {
 
@@ -113,13 +115,18 @@ public class MainActivity extends AppCompatActivity {
             nskAlgoSdk = new NskAlgoSdk();
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-            algoTypes = NskAlgoType.NSK_ALGO_TYPE_ATT.value;
+            algoTypes = NskAlgoType.NSK_ALGO_TYPE_BP.value;
 
             output_data_count = 0;
             output_data = null;
 
             raw_data = new short[512];
             raw_data_index = 0;
+
+
+
+            tgStreamReader = new TgStreamReader(bluetoothAdapter,callback);
+            tgStreamReader.connectAndStart();
 
             if (algoTypes == 0) {
                 Log.d(TAG1, "algoType = 0");
@@ -137,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "NSK_ALGO_Init() " + ret);
             }
 
+            nskAlgoSdk.NskAlgoStart(false);
+
         }
 
         @Override
@@ -144,32 +153,38 @@ public class MainActivity extends AppCompatActivity {
             while (checkThread) {
                 if (bluetoothAdapter.isEnabled()) {
 
-                    Log.d(TAG1, "pass 2");
+//                    Log.d(TAG1, "pass 2");
 
-                    Log.d(TAG1, "go to sleep ");
-                    try {
-                        Thread.sleep(10000);
-//                        onRestart();
-                        onStart();
-                        Log.d(TAG1, "Resume");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    Log.d(TAG1, "go to sleep ");
+//                    try {
+//                        Thread.sleep(10000);
+////                        onRestart();
+//                        onStart();
+//                        Log.d(TAG1, "Resume");
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
 
-                    tgStreamReader = new TgStreamReader(bluetoothAdapter,callback);
+//                    tgStreamReader = new TgStreamReader(bluetoothAdapter,callback);
 
                     if(tgStreamReader != null && tgStreamReader.isBTConnected()){
 
                         // Prepare for connecting
                         tgStreamReader.stop();
                         tgStreamReader.close();
+                        Log.d(TAG1, "TG stop and close ");
                     }
+//                    else {
+//                        tgStreamReader.connectAndStart();
+//                        nskAlgoSdk.NskAlgoStart(false);
+//                    }
 
                     // (4) Demo of  using connect() and start() to replace connectAndStart(),
                     // please call start() when the state is changed to STATE_CONNECTED
-                    tgStreamReader.connectAndStart();
-                    nskAlgoSdk.NskAlgoStart(true);
+//                    tgStreamReader.connectAndStart();
+//                    nskAlgoSdk.NskAlgoStart(false);
 
+                    // detect BP
                     nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
                         @Override
                         public void onBPAlgoIndex(float delta, float theta, float alpha, float beta, float gamma) {
@@ -261,12 +276,14 @@ public class MainActivity extends AppCompatActivity {
                 switch (connectionStates) {
                     case ConnectionStates.STATE_CONNECTING:
                         // Do something when connecting
+                        Log.d(TAG1, "Connecting");
                         break;
                     case ConnectionStates.STATE_CONNECTED:
                         // Do something when connected
                         tgStreamReader.start();
 //                        showToast("Connected", Toast.LENGTH_SHORT);
                         Log.d(TAG1, "Connected");
+                        checkThread = false;
                         break;
                     case ConnectionStates.STATE_WORKING:
                         // Do something when working
@@ -274,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
                         //(9) demo of recording raw data , stop() will call stopRecordRawData,
                         //or you can add a button to control it.
                         //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
+                        Log.d(TAG1, "Working");
                         tgStreamReader.startRecordRawData();
                         break;
                     case ConnectionStates.STATE_GET_DATA_TIME_OUT:
@@ -299,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case ConnectionStates.STATE_DISCONNECTED:
                         // Do something when disconnected
+                        Log.d(TAG1, "Disconnected");
                         break;
                     case ConnectionStates.STATE_ERROR:
                         // Do something when you get error message
