@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -37,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ChatRoom extends AppCompatActivity {
 
-    private ImageButton sendBtn, backBtn, micBtn, playBtn;
+    private ImageButton sendBtn, micBtn, deleteBtn;
     private TextView roomName;
     private EditText typing;
 
@@ -59,7 +62,7 @@ public class ChatRoom extends AppCompatActivity {
     //    private Intent intent;
     private String roomID;
 
-    private BackgroundTread backgroundTread;
+//    private BackgroundTread backgroundTread;
 
 
     @Override
@@ -67,7 +70,7 @@ public class ChatRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        playBtn = findViewById(R.id.playBtn);
+        deleteBtn = findViewById(R.id.deleteBtn);
         micBtn = findViewById(R.id.micBtn);
         sendBtn = findViewById(R.id.sendBtn);
         roomName = findViewById(R.id.roomName_text);
@@ -75,8 +78,8 @@ public class ChatRoom extends AppCompatActivity {
 
 //        backBtn = findViewById()
 
-        backgroundTread = new BackgroundTread();
-        backgroundTread.start();
+//        backgroundTread = new BackgroundTread();
+//        backgroundTread.start();
 
         //setting RecyclerView
         conversations = findViewById(R.id.recycle_view);
@@ -135,7 +138,7 @@ public class ChatRoom extends AppCompatActivity {
             public void onClick(View v) {
                 Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//                speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
+                speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
                 speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
                 startActivityForResult(speechIntent, RECOGNIZER_RESULT);
             }
@@ -157,6 +160,59 @@ public class ChatRoom extends AppCompatActivity {
                 }
             }
         });
+
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setTitle("ลบข้อความ");
+                builder.setMessage("คุณต้องการลบข้อความทั้งหมดใช่ไหม ?");
+
+                //delete btn
+                builder.setPositiveButton("ลบ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteMessage();
+                    }
+
+                });
+
+                //cancel btn
+                builder.setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+//        deleteBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                deleteMessage();
+//            }
+//        });
+    }
+
+    private void deleteMessage() {
+        final String myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    if (dataSnapshot.child("sender").getValue().equals(myUID)){
+                        dataSnapshot.getRef().removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -169,7 +225,7 @@ public class ChatRoom extends AppCompatActivity {
 //            typing.setText(matches.get(0));
             if (!matches.get(0).equals("")) {
 //                sendMessage(matches.get(0), firebaseUser.getUid(), roomID);
-                sendMessage(matches.get(0), firebaseUser.getUid());
+                sendMessageByIndividuals(matches.get(0), firebaseUser.getUid());
             }
 
             Log.d(TAG, "text is : " + matches.get(0));
@@ -249,12 +305,11 @@ public class ChatRoom extends AppCompatActivity {
 //            }
     }
 
-    class BackgroundTread extends Thread {
-
-        public BackgroundTread() {
-
-
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MainActivity.status = true;
 
     }
+
 }

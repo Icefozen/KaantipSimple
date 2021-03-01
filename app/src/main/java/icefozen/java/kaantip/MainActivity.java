@@ -1,4 +1,4 @@
-package icefozen.java.kaantip;
+ package icefozen.java.kaantip;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
 
     public boolean checkThread = true;
+    public static boolean status = false;
 
     threadBackground testThread;
 
@@ -64,14 +66,16 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG1, "Welcome");
         }
 
-        try {
-            TimeUnit.SECONDS.sleep(2);
-            Intent intent = new Intent(MainActivity.this, ChatRoom.class);
-            startActivity(intent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Intent intent = new Intent(MainActivity.this, ChatRoom.class);
+//            TimeUnit.SECONDS.sleep(2);
+//            startActivity(intent);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
+        Intent intent = new Intent(MainActivity.this, ChatRoom.class);
+        startActivity(intent);
 
     }
 
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d(TAG, "onStart: ");
 //    }
 
-    class threadBackground extends Thread {
+    public class threadBackground extends Thread {
 
         // canned data variables
         private short raw_data[] = {0};
@@ -112,11 +116,16 @@ public class MainActivity extends AppCompatActivity {
         private int algoTypes = 0;
         private boolean bInited = false;
         private boolean bRunning = false;
+        private NskAlgoType currentSelectedAlgo;
 
         private int checkMoreBeta;
 
+//        public boolean status;
+
 
         threadBackground() {
+
+            setAlgo();
 
             checkMoreBeta = 0;
 
@@ -128,9 +137,132 @@ public class MainActivity extends AppCompatActivity {
 
             nskAlgoSdk = new NskAlgoSdk();
 
-            setAlgo();
             connectInit();
             startBT();
+
+            processingData();
+
+        }
+
+        private void processingData() {
+            // detect BP
+            nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
+                @Override
+                public void onBPAlgoIndex(float delta, float theta, float alpha, float beta, float gamma) {
+                    Log.d(TAG, "NskAlgoBPAlgoIndexListener: BP: D[" + delta + " dB] T[" + theta + " dB] A[" + alpha + " dB] B[" + beta + " dB] G[" + gamma + "]");
+
+                    final float fDelta = delta, fTheta = theta, fAlpha = alpha, fBeta = beta, fGamma = gamma;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG1, "delta : " + fDelta);
+                            Log.d(TAG1, "theta : " + fTheta);
+                            Log.d(TAG1, "alpha : " + fAlpha);
+                            Log.d(TAG1, "beta : " + fBeta);
+                            Log.d(TAG1, "gamma : " + fGamma);
+                        }
+                    });
+                    if (fBeta > fAlpha) {
+                        checkMoreBeta++;
+                        if (checkMoreBeta > 7) {
+                            notificationShow();
+                        }
+                    }
+                    else {
+                        checkMoreBeta = 0;
+                    }
+                }
+            });
+
+            // Detect Attention
+            nskAlgoSdk.setOnAttAlgoIndexListener(new NskAlgoSdk.OnAttAlgoIndexListener() {
+                @Override
+                public void onAttAlgoIndex(int value) {
+                    Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
+                    String attStr = "[" + value + "]";
+                    final String finalAttStr = attStr;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (value > 50) {
+                                            notificationShow();
+                                Log.d(TAG1, "ATT more than 50");
+//                                checkThread = false;
+                            }
+
+                        }
+                    });
+                }
+            });
+
+            // Detect Signal
+            nskAlgoSdk.setOnSignalQualityListener(new NskAlgoSdk.OnSignalQualityListener() {
+                @Override
+                public void onSignalQuality(final int level) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // change UI elements here
+                            String sqStr = NskAlgoSignalQuality.values()[level].toString();
+//                                    sqText.setText(sqStr);
+                            Log.d(TAG1, "Status is " + sqStr);
+                        }
+                    });
+                }
+            });
+
+            //Check state Change
+            nskAlgoSdk.setOnStateChangeListener(new NskAlgoSdk.OnStateChangeListener() {
+                @Override
+                public void onStateChange(int state, int reason) {
+                    String stateStr = "";
+                    String reasonStr = "";
+                    for (NskAlgoState s : NskAlgoState.values()) {
+                        if (s.value == state) {
+                            stateStr = s.toString();
+                        }
+                    }
+                    for (NskAlgoState r : NskAlgoState.values()) {
+                        if (r.value == reason) {
+                            reasonStr = r.toString();
+                        }
+                    }
+                    Log.d(TAG, "NskAlgoSdkStateChangeListener: state: " + stateStr + ", reason: " + reasonStr);
+                    final String finalStateStr = stateStr + " | " + reasonStr;
+                    final int finalState = state;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (finalState == NskAlgoState.NSK_ALGO_STATE_RUNNING.value || finalState == NskAlgoState.NSK_ALGO_STATE_COLLECTING_BASELINE_DATA.value) {
+                                bRunning = true;
+                            } else if (finalState == NskAlgoState.NSK_ALGO_STATE_STOP.value) {
+                                bRunning = false;
+                                raw_data = null;
+                                raw_data_index = 0;
+
+                                if (tgStreamReader != null && tgStreamReader.isBTConnected()) {
+
+                                    // Prepare for connecting
+                                    tgStreamReader.stop();
+                                    tgStreamReader.close();
+                                }
+
+                                output_data_count = 0;
+                                output_data = null;
+
+                                System.gc();
+                            } else if (finalState == NskAlgoState.NSK_ALGO_STATE_PAUSE.value) {
+                                bRunning = false;
+                            } else if (finalState == NskAlgoState.NSK_ALGO_STATE_ANALYSING_BULK_DATA.value) {
+                                bRunning = true;
+                            } else if (finalState == NskAlgoState.NSK_ALGO_STATE_INITED.value || finalState == NskAlgoState.NSK_ALGO_STATE_UNINTIED.value) {
+                                bRunning = false;
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         private void startBT() {
@@ -159,8 +291,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setAlgo() {
-            algoTypes = NskAlgoType.NSK_ALGO_TYPE_BP.value;
+
+            algoTypes = 0;
+
+            currentSelectedAlgo = NskAlgoType.NSK_ALGO_TYPE_INVALID;
+
+            algoTypes += NskAlgoType.NSK_ALGO_TYPE_BP.value;
             algoTypes += NskAlgoType.NSK_ALGO_TYPE_ATT.value;
+
             if (algoTypes == 0) {
                 Log.d(TAG1, "algoType = 0");
             }
@@ -177,167 +315,57 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "NSK_ALGO_Init() " + ret);
             }
 
+            currentSelectedAlgo = NskAlgoType.NSK_ALGO_TYPE_BP;
+
         }
 
         public void notificationShow() {
-            notificationChannel();
+            if (status){
+                notificationChannel();
 
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-            String textTitle = "การแจ้งเตือน";
-            String textContent = "ตรวจจับคลื่นสมอง";
+                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+                String textTitle = "การแจ้งเตือน";
+                String textContent = "ตรวจจับความต้องการสื่อสาร";
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-                    .setContentTitle(textTitle)
-                    .setContentText(textContent)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
-                    .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                        .setContentTitle(textTitle)
+                        .setContentText(textContent)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
-            notificationManager.notify(0, builder.build());
-            Log.d("Notification", "PASS");
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                notificationManager.notify(0, builder.build());
+                Log.d("Notification", "PASS");
+            }
+            else {
+                Log.d("Notification", "Do not show notification");
+            }
+
         }
 
         @Override
         public void run() {
             while (checkThread) {
                 if (bluetoothAdapter.isEnabled()) {
-                    if (!bRunning) {
 
+                    if (!bRunning) {
                         try {
                             connectInit();
                             startBT();
                             sleep(5000);
+                            Log.d(TAG1, "Connect again");
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
 
 //                    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-                        // detect BP
-                        nskAlgoSdk.setOnBPAlgoIndexListener(new NskAlgoSdk.OnBPAlgoIndexListener() {
-                            @Override
-                            public void onBPAlgoIndex(float delta, float theta, float alpha, float beta, float gamma) {
-                                Log.d(TAG, "NskAlgoBPAlgoIndexListener: BP: D[" + delta + " dB] T[" + theta + " dB] A[" + alpha + " dB] B[" + beta + " dB] G[" + gamma + "]");
-
-                                final float fDelta = delta, fTheta = theta, fAlpha = alpha, fBeta = beta, fGamma = gamma;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Log.d(TAG1, "delta : " + fDelta);
-                                        Log.d(TAG1, "theta : " + fTheta);
-                                        Log.d(TAG1, "alpha : " + fAlpha);
-                                        Log.d(TAG1, "beta : " + fBeta);
-                                        Log.d(TAG1, "gamma : " + fGamma);
-                                    }
-                                });
-                                if (fBeta > fAlpha) {
-                                    checkMoreBeta++;
-                                    if (checkMoreBeta > 7) {
-                                        notificationShow();
-                                    }
-                                }
-                                else {
-                                    checkMoreBeta = 0;
-                                }
-                            }
-                        });
-
-                        // Detect Attention
-                        nskAlgoSdk.setOnAttAlgoIndexListener(new NskAlgoSdk.OnAttAlgoIndexListener() {
-                            @Override
-                            public void onAttAlgoIndex(int value) {
-                                Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
-                                String attStr = "[" + value + "]";
-                                final String finalAttStr = attStr;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (value > 50) {
-//                                            notificationShow();
-                                            Log.d(TAG1, "ATT more than 50");
-                                            checkThread = false;
-                                        }
-
-                                    }
-                                });
-                            }
-                        });
-
-                        // Detect Signal
-                        nskAlgoSdk.setOnSignalQualityListener(new NskAlgoSdk.OnSignalQualityListener() {
-                            @Override
-                            public void onSignalQuality(final int level) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        // change UI elements here
-                                        String sqStr = NskAlgoSignalQuality.values()[level].toString();
-//                                    sqText.setText(sqStr);
-                                        Log.d(TAG1, "Status is " + sqStr);
-                                    }
-                                });
-                            }
-                        });
-
-                        //Check state Change
-                        nskAlgoSdk.setOnStateChangeListener(new NskAlgoSdk.OnStateChangeListener() {
-                            @Override
-                            public void onStateChange(int state, int reason) {
-                                String stateStr = "";
-                                String reasonStr = "";
-                                for (NskAlgoState s : NskAlgoState.values()) {
-                                    if (s.value == state) {
-                                        stateStr = s.toString();
-                                    }
-                                }
-                                for (NskAlgoState r : NskAlgoState.values()) {
-                                    if (r.value == reason) {
-                                        reasonStr = r.toString();
-                                    }
-                                }
-                                Log.d(TAG, "NskAlgoSdkStateChangeListener: state: " + stateStr + ", reason: " + reasonStr);
-                                final String finalStateStr = stateStr + " | " + reasonStr;
-                                final int finalState = state;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        if (finalState == NskAlgoState.NSK_ALGO_STATE_RUNNING.value || finalState == NskAlgoState.NSK_ALGO_STATE_COLLECTING_BASELINE_DATA.value) {
-                                            bRunning = true;
-                                        } else if (finalState == NskAlgoState.NSK_ALGO_STATE_STOP.value) {
-                                            bRunning = false;
-                                            raw_data = null;
-                                            raw_data_index = 0;
-
-                                            if (tgStreamReader != null && tgStreamReader.isBTConnected()) {
-
-                                                // Prepare for connecting
-                                                tgStreamReader.stop();
-                                                tgStreamReader.close();
-                                            }
-
-                                            output_data_count = 0;
-                                            output_data = null;
-
-                                            System.gc();
-                                        } else if (finalState == NskAlgoState.NSK_ALGO_STATE_PAUSE.value) {
-                                            bRunning = false;
-                                        } else if (finalState == NskAlgoState.NSK_ALGO_STATE_ANALYSING_BULK_DATA.value) {
-                                            bRunning = true;
-                                        } else if (finalState == NskAlgoState.NSK_ALGO_STATE_INITED.value || finalState == NskAlgoState.NSK_ALGO_STATE_UNINTIED.value) {
-                                            bRunning = false;
-                                        }
-                                    }
-                                });
-                            }
-                        });
 
 
                 }
@@ -370,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
                         //or you can add a button to control it.
                         //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                         Log.d(TAG1, "Working");
+                        bRunning = true;
 //                        tgStreamReader.startRecordRawData();
                         break;
                     case ConnectionStates.STATE_GET_DATA_TIME_OUT:
@@ -385,17 +414,19 @@ public class MainActivity extends AppCompatActivity {
 //                            tgStreamReader.stop();
 //                            tgStreamReader.close();
 //                        }
+                        bRunning = false;
 
                         break;
                     case ConnectionStates.STATE_STOPPED:
                         // Do something when stopped
                         // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
                         // tgStreamReader.connectAndstart(), because we have to prepare for that.
-
+                        bRunning = true;
                         break;
                     case ConnectionStates.STATE_DISCONNECTED:
                         // Do something when disconnected
                         Log.d(TAG1, "Disconnected");
+                        bRunning = true;
                         break;
                     case ConnectionStates.STATE_ERROR:
                         // Do something when you get error message
@@ -469,5 +500,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status = true;
+        Log.d(TAG1, "onPause: Status is true");
     }
 }
