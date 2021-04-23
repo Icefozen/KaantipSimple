@@ -142,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
 
             processingData();
 
+            Log.d("Algo type ", "" + algoTypes);
+
         }
 
         private void processingData() {
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "NskAlgoBPAlgoIndexListener: BP: D[" + delta + " dB] T[" + theta + " dB] A[" + alpha + " dB] B[" + beta + " dB] G[" + gamma + "]");
 
                     final float fDelta = delta, fTheta = theta, fAlpha = alpha, fBeta = beta, fGamma = gamma;
-                    runOnUiThread(new Runnable() {
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
                             Log.d(TAG1, "delta : " + fDelta);
@@ -162,6 +164,16 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG1, "gamma : " + fGamma);
                         }
                     });
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Log.d(TAG1, "delta : " + fDelta);
+//                            Log.d(TAG1, "theta : " + fTheta);
+//                            Log.d(TAG1, "alpha : " + fAlpha);
+//                            Log.d(TAG1, "beta : " + fBeta);
+//                            Log.d(TAG1, "gamma : " + fGamma);
+//                        }
+//                    });
                     if (fBeta > fAlpha) {
                         checkMoreBeta++;
                         if (checkMoreBeta > 7) {
@@ -181,17 +193,27 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
                     String attStr = "[" + value + "]";
                     final String finalAttStr = attStr;
-                    runOnUiThread(new Runnable() {
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
                             if (value > 50) {
-                                            notificationShow();
+                                notificationShow();
                                 Log.d(TAG1, "ATT more than 50");
 //                                checkThread = false;
                             }
-
                         }
                     });
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (value > 50) {
+//                                            notificationShow();
+//                                Log.d(TAG1, "ATT more than 50");
+////                                checkThread = false;
+//                            }
+//
+//                        }
+//                    });
                 }
             });
 
@@ -199,15 +221,23 @@ public class MainActivity extends AppCompatActivity {
             nskAlgoSdk.setOnSignalQualityListener(new NskAlgoSdk.OnSignalQualityListener() {
                 @Override
                 public void onSignalQuality(final int level) {
-                    runOnUiThread(new Runnable() {
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // change UI elements here
                             String sqStr = NskAlgoSignalQuality.values()[level].toString();
 //                                    sqText.setText(sqStr);
                             Log.d(TAG1, "Status is " + sqStr);
                         }
                     });
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            // change UI elements here
+//                            String sqStr = NskAlgoSignalQuality.values()[level].toString();
+////                                    sqText.setText(sqStr);
+//                            Log.d(TAG1, "Status is " + sqStr);
+//                        }
+//                    });
                 }
             });
 
@@ -463,12 +493,12 @@ public class MainActivity extends AppCompatActivity {
                         nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_ATT.value, attValue, 1);
                         break;
                     case MindDataType.CODE_MEDITATION:
-//                        short medValue[] = {(short)data};
-//                        nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_MED.value, medValue, 1);
+                        short medValue[] = {(short)data};
+                        nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_MED.value, medValue, 1);
                         break;
                     case MindDataType.CODE_POOR_SIGNAL:
-//                        short pqValue[] = {(short)data};
-//                        nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
+                        short pqValue[] = {(short)data};
+                        nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
                         break;
                     case MindDataType.CODE_RAW:
                         raw_data[raw_data_index++] = (short)data;

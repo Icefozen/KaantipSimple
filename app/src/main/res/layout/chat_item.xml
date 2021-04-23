@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:id="@+id/messageLayout">
+    android:id="@+id/messageLayout"
+    >
 
 
     <ImageButton
@@ -24,7 +25,8 @@
         android:textSize="24dp"
         android:textColor="@color/white"
         android:padding="8dp"
-        android:background="@drawable/backgroud_right" />
+        android:background="@drawable/backgroud_right"
+        android:clickable="true"/>
 
 
 </RelativeLayout>

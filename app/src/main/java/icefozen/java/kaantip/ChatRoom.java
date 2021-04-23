@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 public class ChatRoom extends AppCompatActivity {
 
     private ImageButton sendBtn, micBtn, deleteBtn;
-    private TextView roomName;
     private EditText typing;
 
     private RecyclerView conversations;
@@ -73,7 +72,6 @@ public class ChatRoom extends AppCompatActivity {
         deleteBtn = findViewById(R.id.deleteBtn);
         micBtn = findViewById(R.id.micBtn);
         sendBtn = findViewById(R.id.sendBtn);
-        roomName = findViewById(R.id.roomName_text);
         typing = findViewById(R.id.typingText);
 
 //        backBtn = findViewById()
@@ -161,29 +159,27 @@ public class ChatRoom extends AppCompatActivity {
             }
         });
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                builder.setTitle("ลบข้อความ");
-                builder.setMessage("คุณต้องการลบข้อความทั้งหมดใช่ไหม ?");
-
-                //delete btn
-                builder.setPositiveButton("ลบ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteMessage();
-                    }
-
-                });
-
-                //cancel btn
-                builder.setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                builder
+                        .setTitle("ลบข้อความ")
+                        .setMessage("ต้องการลบข้อความทั้งหมดหรือไม่")
+                        .setPositiveButton("ลบ", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteMessage();
+                                readMessages(firebaseUser.getUid());
+                            }
+                        })
+                        .setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
 
@@ -204,6 +200,7 @@ public class ChatRoom extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     if (dataSnapshot.child("sender").getValue().equals(myUID)){
                         dataSnapshot.getRef().removeValue();
+                        Log.d(TAG, "delete message : " + dataSnapshot.toString());
                     }
                 }
             }
@@ -304,6 +301,7 @@ public class ChatRoom extends AppCompatActivity {
 //                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
 //            }
     }
+
 
     @Override
     protected void onPause() {

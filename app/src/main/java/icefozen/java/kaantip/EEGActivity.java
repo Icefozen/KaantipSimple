@@ -342,6 +342,8 @@ public class EEGActivity extends AppCompatActivity {
                     }
                     showToast(sdkVersion, Toast.LENGTH_LONG);
                 }
+
+                Log.d("Algo type", algoTypes + "");
             }
         });
 

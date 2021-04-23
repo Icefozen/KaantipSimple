@@ -22,11 +22,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
@@ -71,10 +73,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageButton playBtn;
         public RelativeLayout messageLayout;
         private TextToSpeech textToSpeech;
+        private TextView chatText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            chatText = itemView.findViewById(R.id.chatText);
             messageLayout = itemView.findViewById(R.id.messageLayout);
             show_message = itemView.findViewById(R.id.chatText);
             playBtn = itemView.findViewById(R.id.playBtn);
@@ -116,7 +120,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 }
             });
 
-            messageLayout.setOnClickListener(new View.OnClickListener() {
+            chatText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -147,18 +151,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
         public void speak(String msg) {
-
             textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
-
             playBtn.setImageResource(R.drawable.ic_baseline_play_circle_outline_24);
-//            for (int i=0; i<mChat.size(); i++) {
-//                Log.d("TTS", "speak : " + i + " " + mChat.get(i).getMessage());
-//            }
         }
 
         private void deleteMessage(int adapterPosition) {
+//            String text = mChat.get(adapterPosition).getMessage();
             final String myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+
+//            Query query = databaseReference.orderByChild("").equalTo(text);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
