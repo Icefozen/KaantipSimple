@@ -3,23 +3,14 @@ Kaantip: A brain-controlled smart application to facilitate communication betwee
 
 Quick Start
 -------
-### Step 1: Create Project on Firebase
-```
-1. go to https://firebase.google.com/
-2. Get start
-3. Add project or exist your project
-4. Add app (Choose Android app)
-5. Download google-service.json
-```
-
-### Step 2: Download file
+### Step 1: Download file
 ```
  git clone https://github.com/Icefozen/KaantipSimple.git
  ```
 
-### Step 3: Build gradle
+### Step 2: Build gradle
 ```
-gradle build
+ ./gradlew build
 ```
 
 Device
