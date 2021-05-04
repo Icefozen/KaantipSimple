@@ -13,10 +13,19 @@ Quick Start
  ./gradlew build
 ```
 
+### Step 3: Run
+```
+ ./gradlew run
+```
+
 Device
 -------
 - The smartphone android SDK 23 or higher.
 - EEG (Optional)
+
+Example
+-------
+
 
 License
 -------
