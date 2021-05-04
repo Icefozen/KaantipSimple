@@ -25,7 +25,12 @@ Device
 
 Example
 -------
-
+1. Start application
+![main](https://github.com/Icefozen/KaantipSimple/tree/master/img/main.jpg)
+2. Use speech to text and text to speech
+![Room](https://github.com/Icefozen/KaantipSimple/tree/master/img/Room.jpg)
+![STT](https://github.com/Icefozen/KaantipSimple/tree/master/img/STT.jpg)
+![TTS](https://github.com/Icefozen/KaantipSimple/tree/master/img/playTTS.jpg)
 
 License
 -------
