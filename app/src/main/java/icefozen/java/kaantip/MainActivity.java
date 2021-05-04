@@ -66,42 +66,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG1, "Welcome");
         }
 
-//        try {
-//            Intent intent = new Intent(MainActivity.this, ChatRoom.class);
-//            TimeUnit.SECONDS.sleep(2);
-//            startActivity(intent);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
         Intent intent = new Intent(MainActivity.this, ChatRoom.class);
         startActivity(intent);
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//        startActivity(intent);
-//    }
-//
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//        startActivity(intent);
-//    }
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        Log.d(TAG, "onStart: ");
-//    }
-
+    // Create Thread for connect brainwave with Bluetooth
     public class threadBackground extends Thread {
 
-        // canned data variables
         private short raw_data[] = {0};
         private int raw_data_index= 0;
         private float output_data[];
@@ -119,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
         private NskAlgoType currentSelectedAlgo;
 
         private int checkMoreBeta;
-
-//        public boolean status;
 
 
         threadBackground() {
@@ -152,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onBPAlgoIndex(float delta, float theta, float alpha, float beta, float gamma) {
                     Log.d(TAG, "NskAlgoBPAlgoIndexListener: BP: D[" + delta + " dB] T[" + theta + " dB] A[" + alpha + " dB] B[" + beta + " dB] G[" + gamma + "]");
-
+                    Log.d(TAG, "Status noti is : " + status );
                     final float fDelta = delta, fTheta = theta, fAlpha = alpha, fBeta = beta, fGamma = gamma;
                     new Thread(new Runnable() {
                         @Override
@@ -175,10 +145,11 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                    });
                     if (fBeta > fAlpha) {
-                        checkMoreBeta++;
-                        if (checkMoreBeta > 7) {
-                            notificationShow();
-                        }
+//                        checkMoreBeta++;
+//                        if (checkMoreBeta > 7) {
+//                            notificationShow();
+//                        }
+                        notificationShow();
                     }
                     else {
                         checkMoreBeta = 0;
@@ -199,21 +170,9 @@ public class MainActivity extends AppCompatActivity {
                             if (value > 50) {
                                 notificationShow();
                                 Log.d(TAG1, "ATT more than 50");
-//                                checkThread = false;
                             }
                         }
                     });
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (value > 50) {
-//                                            notificationShow();
-//                                Log.d(TAG1, "ATT more than 50");
-////                                checkThread = false;
-//                            }
-//
-//                        }
-//                    });
                 }
             });
 
@@ -229,15 +188,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG1, "Status is " + sqStr);
                         }
                     });
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            // change UI elements here
-//                            String sqStr = NskAlgoSignalQuality.values()[level].toString();
-////                                    sqText.setText(sqStr);
-//                            Log.d(TAG1, "Status is " + sqStr);
-//                        }
-//                    });
                 }
             });
 
@@ -298,10 +248,10 @@ public class MainActivity extends AppCompatActivity {
         private void startBT() {
             if (bRunning == false) {
                 nskAlgoSdk.NskAlgoStart(false);
-                Log.d(TAG1, "startBT: ");
+                Log.d(TAG1, "Start connect bluetooth");
             } else {
                 nskAlgoSdk.NskAlgoPause();
-                Log.d(TAG, "stopBT: ");
+                Log.d(TAG, "Stop connect bluetooth");
             }
         }
 
@@ -330,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
             algoTypes += NskAlgoType.NSK_ALGO_TYPE_ATT.value;
 
             if (algoTypes == 0) {
-                Log.d(TAG1, "algoType = 0");
+                Log.d(TAG1, "Algorithm Type is not define");
             }
             else {
                 if (bInited) {
@@ -349,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        //show notification
         public void notificationShow() {
             if (status){
                 notificationChannel();
@@ -379,11 +330,25 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        public void notificationChannel() {
+            String CHANNEL_ID = "notificationID";
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence name = "NotificationChannel";
+                String description = "มีการตรวจจับความตั้งใจ";
+                int important = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, important);
+                channel.setDescription(description);
+
+                NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
         @Override
         public void run() {
             while (checkThread) {
                 if (bluetoothAdapter.isEnabled()) {
-
                     if (!bRunning) {
                         try {
                             connectInit();
@@ -394,10 +359,6 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-
-//                    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
                 }
             }
 
@@ -411,82 +372,46 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "connectionStates change to: " + connectionStates);
                 switch (connectionStates) {
                     case ConnectionStates.STATE_CONNECTING:
-                        // Do something when connecting
                         Log.d(TAG1, "Connecting");
                         break;
                     case ConnectionStates.STATE_CONNECTED:
-                        // Do something when connected
                         tgStreamReader.start();
-//                        showToast("Connected", Toast.LENGTH_SHORT);
                         Log.d(TAG1, "Connected");
-//                        checkThread = false;
                         break;
                     case ConnectionStates.STATE_WORKING:
-                        // Do something when working
-
-                        //(9) demo of recording raw data , stop() will call stopRecordRawData,
-                        //or you can add a button to control it.
-                        //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                         Log.d(TAG1, "Working");
                         bRunning = true;
-//                        tgStreamReader.startRecordRawData();
                         break;
                     case ConnectionStates.STATE_GET_DATA_TIME_OUT:
-                        // Do something when getting data timeout
-
-                        //(9) demo of recording raw data, exception handling
-//                        tgStreamReader.stopRecordRawData();
-
-//                        showToast("Get data time out!", Toast.LENGTH_SHORT);
                         Log.d(TAG1, "Get data time out!");
-
-//                        if (tgStreamReader != null && tgStreamReader.isBTConnected()) {
-//                            tgStreamReader.stop();
-//                            tgStreamReader.close();
-//                        }
                         bRunning = false;
-
                         break;
                     case ConnectionStates.STATE_STOPPED:
-                        // Do something when stopped
-                        // We have to call tgStreamReader.stop() and tgStreamReader.close() much more than
-                        // tgStreamReader.connectAndstart(), because we have to prepare for that.
                         bRunning = true;
                         break;
                     case ConnectionStates.STATE_DISCONNECTED:
-                        // Do something when disconnected
                         Log.d(TAG1, "Disconnected");
                         bRunning = true;
                         break;
                     case ConnectionStates.STATE_ERROR:
-                        // Do something when you get error message
                         break;
                     case ConnectionStates.STATE_FAILED:
-                        // Do something when you get failed message
-                        // It always happens when open the BluetoothSocket error or timeout
-                        // Maybe the device is not working normal.
-                        // Maybe you have to try again
                         break;
                 }
             }
 
             @Override
             public void onRecordFail(int flag) {
-                // You can handle the record error message here
                 Log.e(TAG,"onRecordFail: " +flag);
 
             }
 
             @Override
             public void onChecksumFail(byte[] payload, int length, int checksum) {
-                // You can handle the bad packets here.
             }
 
             @Override
             public void onDataReceived(int datatype, int data, Object obj) {
-                // You can handle the received data here
-                // You can feed the raw data to algo sdk here if necessary.
-//                Log.i(TAG1,"onDataReceived : " + data);
                 switch (datatype) {
                     case MindDataType.CODE_ATTENTION:
                         short attValue[] = {(short)data};
@@ -511,31 +436,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-
         };
-
-
-        public void notificationChannel() {
-            String CHANNEL_ID = "notificationID";
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence name = "NotificationChannel";
-                String description = "มีการตรวจจับความตั้งใจ";
-                int important = NotificationManager.IMPORTANCE_DEFAULT;
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, important);
-                channel.setDescription(description);
-
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        status = true;
-        Log.d(TAG1, "onPause: Status is true");
     }
 }

@@ -33,14 +33,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
 
-    private Button room1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        room1 = findViewById(R.id.roomChat1);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -54,12 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-//    private void makeRoomID(String roomid) {
-//        Intent intentForGoToChatRoom = new Intent(LoginActivity.this, ChatRoom.class);
-//        intentForGoToChatRoom.putExtra("roomID", roomid);
-//        startActivity(intentForGoToChatRoom);
-//    }
-
     private void createRequest() {
 
 
@@ -69,11 +59,8 @@ public class LoginActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
 
-
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-
     }
 
     private void signIn() {
@@ -87,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){
-//            room1 = findViewById(R.id.roomChat1);
-//            makeRoomID(String.valueOf(room1.getId()));
             Intent intent = new Intent(getApplicationContext(), ChatRoom.class);
             startActivity(intent);
         }
@@ -136,21 +121,15 @@ public class LoginActivity extends AppCompatActivity {
                             databaseReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-//                                    makeRoomID(String.valueOf(room1.getId()));
                                     Intent intent = new Intent(getApplicationContext(), ChatRoom.class);
                                     startActivity(intent);
                                     finish();
                                 }
                             });
-
-
                         } else {
                             Toast.makeText(LoginActivity.this, "Sorry auth failed.", Toast.LENGTH_SHORT).show();
 
                         }
-
-
-                        // ...
                     }
                 });
     }

@@ -14,10 +14,7 @@
         android:roundIcon="@mipmap/kaantip_logo2"
         android:supportsRtl="true"
         android:theme="@style/Theme.Kaantip">
-        <activity android:name=".EEGActivity"></activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".Notification" />
-        <activity android:name=".ChatList" />
         <activity android:name=".ChatRoom" />
         <activity android:name=".MainActivity">
             <intent-filter>
