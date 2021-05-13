@@ -57,12 +57,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageButton playBtn;
         public RelativeLayout messageLayout;
         private TextToSpeech textToSpeech;
-        private TextView chatText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            chatText = itemView.findViewById(R.id.chatText);
             messageLayout = itemView.findViewById(R.id.messageLayout);
             show_message = itemView.findViewById(R.id.chatText);
             playBtn = itemView.findViewById(R.id.playBtn);
@@ -103,7 +101,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         public void speak(String msg) {
-            textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
+            textToSpeech.speak(msg, TextToSpeech.QUEUE_ADD, null, "test");
             playBtn.setImageResource(R.drawable.ic_baseline_play_circle_outline_24);
         }
     }

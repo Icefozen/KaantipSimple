@@ -18,7 +18,7 @@ Quick Start
  ./gradlew run
 ```
 
-Device
+Requirement Device
 -------
 - The smartphone android SDK 23 or higher.
 - EEG (Optional)

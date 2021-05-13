@@ -72,12 +72,9 @@ public class ChatRoom extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         conversations.setLayoutManager(linearLayoutManager);
 
-        // set room id for chat
-        roomID = "2131231001";
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Rooms").child(roomID);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -111,7 +108,7 @@ public class ChatRoom extends AppCompatActivity {
                 Intent speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "พูดได้เลย !");
-                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "th-TH");
                 startActivityForResult(speechIntent, RECOGNIZER_RESULT);
             }
         });
@@ -121,7 +118,7 @@ public class ChatRoom extends AppCompatActivity {
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
-                    int result = textToSpeech.setLanguage(Locale.getDefault());
+                    int result = textToSpeech.setLanguage(new Locale("th"));
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.d("TTS", "Language not supported");
                     } else {
@@ -163,7 +160,7 @@ public class ChatRoom extends AppCompatActivity {
     private void deleteMessage() {
         final String myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
@@ -207,6 +204,7 @@ public class ChatRoom extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Log.d(TAG, "snapshot = " + snapshot.getChildren());
                     ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
+//                    Log.d(TAG, chatModel.getMessage() + " " + chatModel.getSender());
                     if (chatModel.getSender().equals(sender)) {
                         chatOnConversation.add(chatModel);
                     }
@@ -240,7 +238,7 @@ public class ChatRoom extends AppCompatActivity {
     }
 
     public void speakTTS(String msg) {
-        textToSpeech.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "test");
+        textToSpeech.speak(msg, TextToSpeech.QUEUE_ADD, null, "test");
     }
 
     @Override

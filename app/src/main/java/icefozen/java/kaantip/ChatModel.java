@@ -8,22 +8,6 @@ public class ChatModel {
 
     private String room;
 
-    public ChatModel(String message, String room, String sender){
-
-        this.message = message;
-        this.sender = sender;
-        this.room = room;
-    }
-    public ChatModel(String message, String room){
-
-        this.message = message;
-        this.room = room;
-    }
-
-    public ChatModel(String message) {
-        this.message = message;
-    }
-
     public ChatModel() {
     }
 

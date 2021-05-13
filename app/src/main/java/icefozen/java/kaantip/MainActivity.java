@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG1, "Welcome");
         }
 
-        Intent intent = new Intent(MainActivity.this, ChatRoom.class);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
 
     }
@@ -134,21 +134,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG1, "gamma : " + fGamma);
                         }
                     });
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Log.d(TAG1, "delta : " + fDelta);
-//                            Log.d(TAG1, "theta : " + fTheta);
-//                            Log.d(TAG1, "alpha : " + fAlpha);
-//                            Log.d(TAG1, "beta : " + fBeta);
-//                            Log.d(TAG1, "gamma : " + fGamma);
-//                        }
-//                    });
                     if (fBeta > fAlpha) {
-//                        checkMoreBeta++;
-//                        if (checkMoreBeta > 7) {
-//                            notificationShow();
-//                        }
                         notificationShow();
                     }
                     else {
